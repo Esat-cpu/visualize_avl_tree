@@ -7,16 +7,19 @@ int str_to_int (const char* str, int* out) {
     int val =0;
     int negative =0;
 
-    if (!(*str)) return 1;
-
-    // ignore spaces on front
+    // Ignore spaces on front
     while (*str == ' ')
         str++;
+
+    // Check if the string is empty
+    if (!(*str)) return 1;
 
 
     if (*str == '-') {
         str++;
         negative =1;
+        // Check if the only character is '-'
+        if (!(*str)) return -1;
     }
 
     for (const char *ch = str; *ch; ch++) {

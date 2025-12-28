@@ -153,10 +153,10 @@ Tree* avl_remove(Tree* root, int data, int* found) {
     }
 
     else if (data < root->data)
-        root->left = avl_remove(root->left, data);
+        root->left = avl_remove(root->left, data, NULL);
 
     else
-        root->right = avl_remove(root->right, data);
+        root->right = avl_remove(root->right, data, NULL);
 
 
     return restore_balance(root);

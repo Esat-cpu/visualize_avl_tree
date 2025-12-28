@@ -18,8 +18,6 @@ static void on_insert_click (GtkButton* button, gpointer user_data) {
     AppData* app = (AppData*) user_data;
 
     const char* text = gtk_entry_get_text (GTK_ENTRY (app->insert_box));
-    gtk_entry_set_text (GTK_ENTRY (app->insert_box), "");
-
     int val;
 
     int fl = str_to_int(text, &val);
@@ -27,23 +25,23 @@ static void on_insert_click (GtkButton* button, gpointer user_data) {
     if (fl == -1) {
         g_print("Geçersiz Giriş!\n");
     }
-    else if (fl == 1) {
-        return;
-    }
-    else {
+
+    else if (fl == 0) {
         Tree* node = init_tree_node(val);
         app->root = avl_insert(app->root, node);
-        // bu eklediklerini free etmeyi düşün ne bilm headera falan free yaz
+
+        // TODO: Draw the new tree
     }
+
+    gtk_entry_set_text (GTK_ENTRY (app->insert_box), "");
 }
+
 
 
 static void on_remove_click (GtkButton* button, gpointer user_data) {
     AppData* app = (AppData*) user_data;
 
     const char* text = gtk_entry_get_text (GTK_ENTRY (app->remove_box));
-    gtk_entry_set_text (GTK_ENTRY (app->remove_box), "");
-
     int val;
 
     int fl = str_to_int(text, &val);
@@ -51,26 +49,26 @@ static void on_remove_click (GtkButton* button, gpointer user_data) {
     if (fl == -1) {
         g_print("Geçersiz Giriş!\n");
     }
-    else if (fl == 1) {
-        return;
-    }
-    else {
+
+    else if (fl == 0) {
         int found = 0;
-        app->root = avl_insert(app->root, val, &found);
+        app->root = avl_remove(app->root, val, &found);
 
         if (found) {
-            // burada çizim yenilenecek
+            // TODO: Draw the new tree
         }
     }
+
+    gtk_entry_set_text (GTK_ENTRY (app->remove_box), "");
 }
 
 
 
 static gboolean
-on_draw (GtkWidget* widget, cairo_t* cr, gpointer data) {
-    // RGB ile gri renk
-    cairo_set_source_rgb(cr, 0.6, 0.85, 0.8); // 0.0-1.0 arası, 0.8 = açık gri
-    cairo_paint(cr); // tüm DrawingArea’yı boya
+on_draw (GtkWidget* widget, cairo_t* cr, gpointer data)
+{
+    cairo_set_source_rgb(cr, 0.6, 0.85, 0.8);
+    cairo_paint(cr);
     return FALSE;
 }
 
