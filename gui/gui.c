@@ -31,7 +31,7 @@ static void on_insert_click (GtkButton* button, gpointer user_data) {
         Tree* node = init_tree_node(val);
         app->root = avl_insert(app->root, node);
 
-        // TODO: Draw the new tree
+        gtk_widget_queue_draw (app->drawing_area);
     }
 
     gtk_entry_set_text (GTK_ENTRY (app->insert_box), "");
@@ -56,7 +56,7 @@ static void on_remove_click (GtkButton* button, gpointer user_data) {
         app->root = avl_remove(app->root, val, &found);
 
         if (found) {
-            // TODO: Draw the new tree
+            gtk_widget_queue_draw (app->drawing_area);
         }
     }
 
@@ -68,8 +68,26 @@ static void on_remove_click (GtkButton* button, gpointer user_data) {
 static gboolean
 on_draw (GtkWidget* widget, cairo_t* cr, gpointer data)
 {
+    AppData* app = data;
+
+    // Background
     cairo_set_source_rgb(cr, 0.6, 0.85, 0.8);
     cairo_paint(cr);
+
+    if (!app || !app->root)
+        return FALSE;
+
+
+    int width  = gtk_widget_get_allocated_width (widget);
+    int height = gtk_widget_get_allocated_height (widget);
+
+    double x = width / 2.0;
+    double y = 50;
+
+    cairo_set_source_rgb (cr, 0, 0, 0);
+    cairo_arc (cr, x, y, 20, 0, 2 * G_PI);
+    cairo_stroke(cr);
+
     return FALSE;
 }
 
@@ -147,13 +165,14 @@ static void activate(GtkApplication* app, gpointer user_data) {
     gtk_widget_set_size_request (drawing_area, 400, 300);
     gtk_box_pack_start (GTK_BOX (vbox), drawing_area, TRUE, TRUE, 0);
 
-    g_signal_connect (drawing_area, "draw", G_CALLBACK (on_draw), NULL);
 
     AppData* app_data = g_new0 (AppData, 1);
     app_data->root = NULL;
     app_data->insert_box = insert_box;
     app_data->remove_box = remove_box;
     app_data->drawing_area = drawing_area;
+
+    g_signal_connect (drawing_area, "draw", G_CALLBACK (on_draw), app_data);
 
     g_signal_connect (insert_button, "clicked", G_CALLBACK (on_insert_click), app_data);
     g_signal_connect (remove_button, "clicked", G_CALLBACK (on_remove_click), app_data);

@@ -92,7 +92,7 @@ restore_balance (Tree* root)
 Tree* avl_insert(Tree* root, Tree* new) {
     if (root == NULL) return new;
 
-    if (root->data < new->data)
+    if (new->data < root->data)
         root->left = avl_insert(root->left, new);
     else
         root->right = avl_insert(root->right, new);

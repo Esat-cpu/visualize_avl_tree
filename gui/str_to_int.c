@@ -1,8 +1,10 @@
 
-// Store integer value of the given string in out
-// Returns 0 on success, -1 if the given string doesn't state a integer value
-// Returns 1 if the given string is empty
-// '-' is supported for negative numbers
+/*
+ Store integer value of the given string in out
+ Returns 0 on success, -1 if the given string doesn't state a integer value
+ Returns 1 if the given string is empty
+ '-' is supported for negative numbers
+*/
 int str_to_int (const char* str, int* out) {
     int val =0;
     int negative =0;
