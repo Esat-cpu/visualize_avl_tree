@@ -1,5 +1,5 @@
 #include <gtk/gtk.h>
-#include <string.h>
+#include <stdio.h>
 
 #include "avl_tree.h"
 #include "gtk_avl_tree.h"
@@ -65,6 +65,50 @@ static void on_remove_click (GtkButton* button, gpointer user_data) {
 
 
 
+
+static void
+draw_node (cairo_t *cr, Tree* node, double x, double y, double x_offset) {
+    if (!node) return;
+
+    // Circle
+    double r = 20; // radius
+    cairo_arc (cr, x, y, r, 0, 2 * G_PI);
+    cairo_stroke (cr);
+
+    char buf[8];
+    snprintf(buf, sizeof buf, "%d", node->data);
+
+    cairo_move_to (cr, x - 6, y + 5);
+    cairo_show_text (cr, buf);
+
+    cairo_new_path (cr);
+
+    double x_left  = x - x_offset;
+    double x_right = x + x_offset;
+    double y_height = 80;
+    double offset  = x_offset / 2;
+
+    if (node->left) {
+        // line
+        cairo_move_to (cr, x, y + r);
+        cairo_line_to (cr, x_left, (y + y_height - r));
+        cairo_stroke (cr);
+
+        draw_node (cr, node->left, x_left, y + y_height, offset);
+    }
+
+    if (node->right) {
+        // line
+        cairo_move_to (cr, x, y + r);
+        cairo_line_to (cr, x_right, (y + y_height - r));
+        cairo_stroke (cr);
+
+        draw_node (cr, node->right, x_right, y + y_height, offset);
+    }
+}
+
+
+
 static gboolean
 on_draw (GtkWidget* widget, cairo_t* cr, gpointer data)
 {
@@ -88,10 +132,11 @@ on_draw (GtkWidget* widget, cairo_t* cr, gpointer data)
     cairo_arc (cr, x, y, 20, 0, 2 * G_PI);
     cairo_stroke(cr);
 
+    double start_offset = width / 4.0;
+    draw_node(cr, app->root, x, y, start_offset);
+
     return FALSE;
 }
-
-
 
 
 
