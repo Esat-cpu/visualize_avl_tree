@@ -64,7 +64,7 @@ restore_balance (Tree* root)
         // LR
         else {
             root->left = left_rotate(root->left);
-            return right_rotate(root->left);
+            return right_rotate(root);
         }
     }
 
@@ -107,46 +107,33 @@ Tree* avl_remove(Tree* root, int data, int* found) {
 
     if (root->data == data) {
         if (found != NULL) *found = 1;
-        Tree* new_root;
 
         // Replace right subtree with deleted node if left subtree is empty
         if (root->left == NULL) {
-            new_root = root->right;
+            Tree* temp = root;
+            root = root->right;
+            free(temp);
         }
 
-        // Replace largest node of left subtree with deleted node
+        // Replace root's value with the largest value from its left subtree
+        // This block does not delete the root node
         else {
-            Tree* subtree = root->left;
-            Tree* largest_node = subtree->right; // initialize largest_node
+            Tree* largest_node = root->left;
 
-            if (largest_node == NULL) {
-                new_root = subtree;
-                new_root->right = root->right;
-            }
+            while (largest_node->right)
+                largest_node = largest_node->right;
 
-            else {
-                while (largest_node->right != NULL) {
-                    largest_node = largest_node->right;
-                    subtree = subtree->right;
-                }
+            root->data = largest_node->data;
 
-                subtree->right = largest_node->left;
-
-                new_root = largest_node;
-                new_root->right = root->right;
-                new_root->left = root->left;
-            }
+            root->left = avl_remove(root->left, largest_node->data, NULL);
         }
-
-        free(root);
-        return new_root;
     }
 
     else if (data < root->data)
-        root->left = avl_remove(root->left, data, NULL);
+        root->left = avl_remove(root->left, data, found);
 
     else
-        root->right = avl_remove(root->right, data, NULL);
+        root->right = avl_remove(root->right, data, found);
 
 
     return restore_balance(root);
